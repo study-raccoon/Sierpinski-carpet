@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sierpinski Carpet - WebGL</title>
+<style>
+body { font-family: sans-serif; display: flex; flex-wrap: wrap; gap: 24px; padding: 20px; }
+canvas { border: 1px solid #999; max-width: 100%; }
+</style>
+</head>
+<body>
+<canvas id="gl-canvas" width="600" height="600"></canvas>
+
+<script>
+let gl;
+
+window.onload = function () {
+  const canvas = document.getElementById("gl-canvas");
+  gl = canvas.getContext("webgl");
+  if (!gl) {
+    alert("WebGL을 지원하지 않는 브라우저입니다.");
+    return;
+  }
+
+  gl.viewport(0, 0, canvas.width, canvas.height);
+
+  gl.clearColor(0.9, 0.9, 0.9, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+};
+</script>
+</body>
+</html>
