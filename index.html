@@ -7,10 +7,20 @@
 <style>
 body { font-family: sans-serif; display: flex; flex-wrap: wrap; gap: 24px; padding: 20px; }
 canvas { border: 1px solid #999; max-width: 100%; }
+.panel { display: flex; flex-direction: column; gap: 14px; min-width: 240px; }
+label { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 </style>
 </head>
 <body>
 <canvas id="gl-canvas" width="600" height="600"></canvas>
+<div class="panel">
+  <h3>Sierpinski Carpet</h3>
+  <label>분할 횟수
+    <input type="range" id="depth" min="0" max="6" value="3">
+    <span id="depthValue">3</span>
+  </label>
+  <p id="info"></p>
+</div>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
 attribute vec2 aPosition;
@@ -30,7 +40,6 @@ void main() {
 let gl, program, vBuffer;
 let positions = [];
 let vertexCount = 0;
-let depth = 3;
 
 window.onload = function () {
   const canvas = document.getElementById("gl-canvas");
@@ -51,6 +60,8 @@ window.onload = function () {
   const aPosition = gl.getAttribLocation(program, "aPosition");
   gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(aPosition);
+
+  document.getElementById("depth").addEventListener("input", updateGeometry);
 
   updateGeometry();
 };
@@ -102,12 +113,18 @@ function divideSquare(x, y, size, depth) {
 }
 
 function updateGeometry() {
+  const depth = parseInt(document.getElementById("depth").value);
+  document.getElementById("depthValue").textContent = depth;
+
   positions = [];
   divideSquare(-0.9, -0.9, 1.8, depth);
   vertexCount = positions.length / 2;
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+  document.getElementById("info").textContent =
+    "사각형 " + (vertexCount / 6) + "개 / 정점 " + vertexCount + "개";
 
   render();
 }
