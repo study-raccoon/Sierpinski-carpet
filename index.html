@@ -30,6 +30,7 @@ void main() {
 let gl, program, vBuffer;
 let positions = [];
 let vertexCount = 0;
+let depth = 3;
 
 window.onload = function () {
   const canvas = document.getElementById("gl-canvas");
@@ -86,9 +87,23 @@ function square(x, y, size) {
   );
 }
 
+function divideSquare(x, y, size, depth) {
+  if (depth === 0) {
+    square(x, y, size);
+    return;
+  }
+  const s = size / 3;
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      if (i === 1 && j === 1) continue;
+      divideSquare(x + i * s, y + j * s, s, depth - 1);
+    }
+  }
+}
+
 function updateGeometry() {
   positions = [];
-  square(-0.9, -0.9, 1.8);
+  divideSquare(-0.9, -0.9, 1.8, depth);
   vertexCount = positions.length / 2;
 
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
