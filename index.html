@@ -12,8 +12,24 @@ canvas { border: 1px solid #999; max-width: 100%; }
 <body>
 <canvas id="gl-canvas" width="600" height="600"></canvas>
 
+<script id="vertex-shader" type="x-shader/x-vertex">
+attribute vec2 aPosition;
+void main() {
+  gl_Position = vec4(aPosition, 0.0, 1.0);
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+precision mediump float;
+void main() {
+  gl_FragColor = vec4(0.12, 0.23, 0.54, 1.0);
+}
+</script>
+
 <script>
-let gl;
+let gl, program, vBuffer;
+let positions = [];
+let vertexCount = 0;
 
 window.onload = function () {
   const canvas = document.getElementById("gl-canvas");
@@ -25,9 +41,35 @@ window.onload = function () {
 
   gl.viewport(0, 0, canvas.width, canvas.height);
 
+  program = createProgram("vertex-shader", "fragment-shader");
+  gl.useProgram(program);
+
+  vBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+
+  const aPosition = gl.getAttribLocation(program, "aPosition");
+  gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(aPosition);
+
+  updateGeometry();
+};
+
+function updateGeometry() {
+  positions = [];
+  square(-0.9, -0.9, 1.8);
+  vertexCount = positions.length / 2;
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+  render();
+}
+
+function render() {
   gl.clearColor(0.9, 0.9, 0.9, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
-};
+  gl.drawArrays(gl.TRIANGLES, 0, vertexCount);
+}
 </script>
 </body>
 </html>
