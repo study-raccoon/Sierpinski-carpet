@@ -54,6 +54,38 @@ window.onload = function () {
   updateGeometry();
 };
 
+function compileShader(type, source) {
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    throw new Error(gl.getShaderInfoLog(shader));
+  }
+  return shader;
+}
+
+function createProgram(vsId, fsId) {
+  const vs = compileShader(gl.VERTEX_SHADER, document.getElementById(vsId).text);
+  const fs = compileShader(gl.FRAGMENT_SHADER, document.getElementById(fsId).text);
+  const p = gl.createProgram();
+  gl.attachShader(p, vs);
+  gl.attachShader(p, fs);
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    throw new Error(gl.getProgramInfoLog(p));
+  }
+  return p;
+}
+
+function square(x, y, size) {
+  const x2 = x + size;
+  const y2 = y + size;
+  positions.push(
+    x, y,  x2, y,  x2, y2,
+    x, y,  x2, y2, x, y2
+  );
+}
+
 function updateGeometry() {
   positions = [];
   square(-0.9, -0.9, 1.8);
